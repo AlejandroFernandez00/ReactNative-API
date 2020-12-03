@@ -1,14 +1,28 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {Component} from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
 import { Image } from 'react-native';
-import fraseAño from "./library/library";
+
+
+const fraseAño = () => {
+  return fetch('http://numbersapi.com/random/year?json')
+    .then((response) => response.json())
+    .then((json) => {
+      return json.text;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
 
 export default class App extends Component {
 
   constructor(props){
     super(props)
-    this.handlerClick = this.handlerClick.bind(this);
+    this.state = {
+      isReady: false,
+      texto: null
+    };
     }
 
     
@@ -24,16 +38,18 @@ export default class App extends Component {
           style={{ width: 200, height: 200 }}
         />
       <StatusBar style="auto" />
-      <button title="Probar la Api" onClick={this.handlerClick}>Probar api</button>
+      <Button onPress={() => this.handlerClick()}
+                  title="Llamar API"
+                  />
+                  <Text>{this.state.texto}</Text>  
     </View>
   );
 }
 
 handlerClick(){
-  function funcionCallback(datos){
-    alert(datos.text)
-}
-fraseAño(funcionCallback);
+  fraseAño().then(resp=> {
+    this.setState({texto: resp});
+  });
 }
 }
 const styles = StyleSheet.create({
